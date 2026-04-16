@@ -73,8 +73,9 @@
             padding: 8px 16px;
             font-size: 12px;
             cursor: pointer;
-            margin-top: auto; /* Pushes button to bottom */
+            margin-top: auto;
             align-self: center;
+            transition: background-color 0.2s;
         }
 
         .btn-green:hover {
@@ -99,6 +100,7 @@
             display: flex;
             justify-content: center;
             margin-bottom: 40px;
+            display: none; /* Hidden until Buy Now is clicked */
         }
 
         .payment-box {
@@ -148,50 +150,48 @@
             <div class="card">
                 <h3>Nike Mercurial Superfly 10 Elite</h3>
                 <p>₹23795</p>
-                <button class="btn-green">Add to Cart</button>
+                <button class="btn-green" onclick="addToCart('Nike Mercurial', 23795)">Add to Cart</button>
             </div>
 
             <div class="card">
                 <h3>Adidas Predator Elite</h3>
                 <p>₹27999</p>
-                <button class="btn-green">Add to Cart</button>
+                <button class="btn-green" onclick="addToCart('Adidas Predator', 27999)">Add to Cart</button>
             </div>
 
             <div class="card">
                 <h3>Puma Future 7 Ultimate</h3>
                 <p>₹19999</p>
-                <button class="btn-green">Add to Cart</button>
+                <button class="btn-green" onclick="addToCart('Puma Future 7', 19999)">Add to Cart</button>
             </div>
 
             <div class="card">
                 <h3>Nike Tiempo Legend 10 Pro</h3>
                 <p>₹14995</p>
-                <button class="btn-green">Add to Cart</button>
+                <button class="btn-green" onclick="addToCart('Nike Tiempo', 14995)">Add to Cart</button>
             </div>
         </div>
 
         <div class="card cart-card">
             <h3>Shopping Cart</h3>
-            <ul>
-                <li>Nike Mercurial - ₹23795</li>
-                <li>Adidas Predator - ₹27999</li>
-            </ul>
-            <p><strong>Total: ₹51794</strong></p>
-            <button class="btn-green">Buy Now</button>
+            <ul id="cart-items">
+                </ul>
+            <p><strong id="cart-total">Total: ₹0</strong></p>
+            <button class="btn-green" onclick="showPayment()">Buy Now</button>
         </div>
 
     </div>
 
-    <div class="payment-container">
+    <div class="payment-container" id="payment-section">
         <div class="payment-box">
             <h3>Dummy Payment Gateway</h3>
-            <p><strong>Total Amount: ₹51794</strong></p>
+            <p><strong id="payment-total-display">Total Amount: ₹0</strong></p>
             
-            <input type="text" placeholder="Enter Card Number">
+            <input type="text" id="card-number" placeholder="Enter Card Number">
             
             <div class="payment-buttons">
-                <button class="btn-green">Pay</button>
-                <button class="btn-green">Cancel</button>
+                <button class="btn-green" onclick="processPayment()">Pay</button>
+                <button class="btn-green" onclick="cancelPayment()">Cancel</button>
             </div>
             
             <p class="helper-text">
@@ -201,5 +201,56 @@
         </div>
     </div>
 
+    <script>
+        let currentTotal = 0;
+
+        // Function to add items to the cart
+        function addToCart(itemName, itemPrice) {
+            const cartList = document.getElementById('cart-items');
+            
+            // Create a new list item
+            const newItem = document.createElement('li');
+            newItem.textContent = `${itemName} - ₹${itemPrice}`;
+            cartList.appendChild(newItem);
+
+            // Update Total
+            currentTotal += itemPrice;
+            document.getElementById('cart-total').textContent = `Total: ₹${currentTotal}`;
+            document.getElementById('payment-total-display').textContent = `Total Amount: ₹${currentTotal}`;
+        }
+
+        // Function to show the payment box
+        function showPayment() {
+            if(currentTotal === 0) {
+                alert("Your cart is empty! Please add items first.");
+                return;
+            }
+            document.getElementById('payment-section').style.display = 'flex';
+        }
+
+        // Function to hide the payment box
+        function cancelPayment() {
+            document.getElementById('payment-section').style.display = 'none';
+            document.getElementById('card-number').value = ''; // clear input
+        }
+
+        // Function to simulate payment processing
+        function processPayment() {
+            const cardValue = document.getElementById('card-number').value.replace(/\s+/g, ''); // removes spaces
+            
+            if (cardValue === '1111111111111111') {
+                alert("Payment Successful! Thank you for your order.");
+                // Reset cart after success
+                document.getElementById('cart-items').innerHTML = '';
+                currentTotal = 0;
+                document.getElementById('cart-total').textContent = `Total: ₹0`;
+                cancelPayment();
+            } else if (cardValue === '2222222222222222') {
+                alert("Payment Failed. Card declined.");
+            } else {
+                alert("Invalid card number. Please try the test numbers provided.");
+            }
+        }
+    </script>
 </body>
 </html>
